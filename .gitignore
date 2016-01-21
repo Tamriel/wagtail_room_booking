@@ -57,3 +57,5 @@ docs/_build/
 
 # PyBuilder
 target/
+home/migrations
+db.sqlite3
