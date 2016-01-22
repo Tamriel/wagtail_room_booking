@@ -9,13 +9,13 @@
 
 {% block body_class %}home{% endblock %}
 
-{% block body_base %}
-{% wagtailuserbar %}
-
-<!-- {% block menu %}
+{% block menu %}
     {% get_site_root as site_root %}
     {% top_menu parent=site_root calling_page=self %}
-{% endblock %} -->
+{% endblock %}
+
+{% block body_base %}
+{% wagtailuserbar %}
 
 <div class="main container">
     {% block heading %}
