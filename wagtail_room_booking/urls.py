@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-    url(r'^search/$', search_views.search, name='search'),
+    url(r'^search/$', search_views.search, name='home'), # todo 'search'
     url(r"^account/", include("account.urls")),
     url(r'', include(wagtail_urls)),
 ]
