@@ -21,10 +21,7 @@
 {% include "cms/_scripts.html" %}
 {% endblock %}
 
-{% block head_title %}
-{% if self.seo_title %}{{ self.seo_title }}{% else %}{{ self.title }}{% endif %}{% endblock %}
-{% block title_suffix %}
-{% endblock %}
+{% block head_title_base %}{{ self.title }}{% endblock %}
 
 {% block topbar_base %}
 {% block menu %}
