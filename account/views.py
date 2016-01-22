@@ -698,6 +698,7 @@ class SettingsView(LoginRequiredMixin, FormView):
             initial["email"] = self.primary_email_address.email
         initial["timezone"] = self.request.user.account.timezone
         initial["language"] = self.request.user.account.language
+        initial["street"] = self.request.user.account.street
         return initial
 
     def form_valid(self, form):
@@ -743,6 +744,8 @@ class SettingsView(LoginRequiredMixin, FormView):
             fields["timezone"] = form.cleaned_data["timezone"]
         if "language" in form.cleaned_data:
             fields["language"] = form.cleaned_data["language"]
+        if "street" in form.cleaned_data:
+            fields["street"] = form.cleaned_data["street"]
         if fields:
             account = self.request.user.account
             for k, v in fields.items():

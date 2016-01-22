@@ -196,6 +196,10 @@ class PasswordResetTokenForm(forms.Form):
 class SettingsForm(forms.Form):
 
     email = forms.EmailField(label=_("Email"), required=True)
+    street = forms.CharField(
+            label=_("Straße"),
+            max_length=100,
+    )
     timezone = forms.ChoiceField(
         label=_("Timezone"),
         choices=[("", "---------")] + settings.ACCOUNT_TIMEZONES,

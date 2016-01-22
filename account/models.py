@@ -32,14 +32,17 @@ from account.signals import signup_code_sent, signup_code_used
 
 @python_2_unicode_compatible
 class Account(models.Model):
-
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="account", verbose_name=_("user"))
+    street = models.CharField(
+            _("street"),
+            max_length=100,
+    )
     timezone = TimeZoneField(_("timezone"))
     language = models.CharField(
-        _("language"),
-        max_length=10,
-        choices=settings.ACCOUNT_LANGUAGES,
-        default=settings.LANGUAGE_CODE
+            _("language"),
+            max_length=10,
+            choices=settings.ACCOUNT_LANGUAGES,
+            default=settings.LANGUAGE_CODE
     )
 
     @classmethod
@@ -110,7 +113,6 @@ def user_post_save(sender, **kwargs):
 
 @python_2_unicode_compatible
 class AnonymousAccount(object):
-
     def __init__(self, request=None):
         self.user = AnonymousUser()
         self.timezone = settings.TIME_ZONE
@@ -125,7 +127,6 @@ class AnonymousAccount(object):
 
 @python_2_unicode_compatible
 class SignupCode(models.Model):
-
     class AlreadyExists(Exception):
         pass
 
@@ -216,10 +217,10 @@ class SignupCode(models.Model):
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         if "signup_url" not in kwargs:
             signup_url = "{0}://{1}{2}?{3}".format(
-                protocol,
-                current_site.domain,
-                reverse("account_signup"),
-                urlencode({"code": self.code})
+                    protocol,
+                    current_site.domain,
+                    reverse("account_signup"),
+                    urlencode({"code": self.code})
             )
         else:
             signup_url = kwargs["signup_url"]
@@ -236,7 +237,6 @@ class SignupCode(models.Model):
 
 
 class SignupCodeResult(models.Model):
-
     signup_code = models.ForeignKey(SignupCode)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     timestamp = models.DateTimeField(default=timezone.now)
@@ -248,7 +248,6 @@ class SignupCodeResult(models.Model):
 
 @python_2_unicode_compatible
 class EmailAddress(models.Model):
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     email = models.EmailField(max_length=254, unique=settings.ACCOUNT_EMAIL_UNIQUE)
     verified = models.BooleanField(_("verified"), default=False)
@@ -299,7 +298,6 @@ class EmailAddress(models.Model):
 
 @python_2_unicode_compatible
 class EmailConfirmation(models.Model):
-
     email_address = models.ForeignKey(EmailAddress)
     created = models.DateTimeField(default=timezone.now)
     sent = models.DateTimeField(null=True)
@@ -322,6 +320,7 @@ class EmailConfirmation(models.Model):
     def key_expired(self):
         expiration_date = self.sent + datetime.timedelta(days=settings.ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS)
         return expiration_date <= timezone.now()
+
     key_expired.boolean = True
 
     def confirm(self):
@@ -337,9 +336,9 @@ class EmailConfirmation(models.Model):
         current_site = kwargs["site"] if "site" in kwargs else Site.objects.get_current()
         protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
         activate_url = "{0}://{1}{2}".format(
-            protocol,
-            current_site.domain,
-            reverse(settings.ACCOUNT_EMAIL_CONFIRMATION_URL, args=[self.key])
+                protocol,
+                current_site.domain,
+                reverse(settings.ACCOUNT_EMAIL_CONFIRMATION_URL, args=[self.key])
         )
         ctx = {
             "email_address": self.email_address,
@@ -355,7 +354,6 @@ class EmailConfirmation(models.Model):
 
 
 class AccountDeletion(models.Model):
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.EmailField(max_length=254)
     date_requested = models.DateTimeField(_("date requested"), default=timezone.now)
