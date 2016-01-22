@@ -1,0 +1,77 @@
+{% load wagtailcore_tags bootstrap room_booking_tags %}
+{% get_site_root as site_root %}
+
+{# Implementation of bootstrap theme dropdown menu - shows top level links and their children #}
+<div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {# Link to home page #}
+            <a href="{% pageurl site_root %}" class="navbar-brand" title="{{ site_root.title }}"
+               data-placement="bottom">
+                <i class="glyphicon glyphicon-home"></i>
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                {% for menuitem in menuitems %}
+                    <li class="{% if menuitem.show_dropdown %}dropdown{% endif %}{% if menuitem.active %} active{% endif %} dropdown-hover">
+                        {% if menuitem.show_dropdown %}
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">{{ menuitem.title }} <b
+                                    class="caret"></b></a>
+                            {% top_menu_children parent=menuitem %}
+                        {% else %}
+                            <a href="{% pageurl menuitem %}">{{ menuitem.title }}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if username %}
+                    <li><a href="/accounts/profile">{{ username }}</a></li>
+                    <li><a href="/accounts/logout">Abmelden</a></li>
+                {% else %}
+                    <li><a href="/accounts/register">Registrieren</a></li>
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">Anmelden</a>
+                        <ul class="dropdown-menu" style="padding: 15px;min-width: 250px;">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form class="form" role="form" method="post" action="{% url 'auth_login' %}"
+                                              accept-charset="UTF-8"
+                                              id="login-nav">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label class="sr-only" for="username">Benutzername</label>
+                                                <input type="text" class="form-control" name="username"
+                                                       placeholder="Benutzername" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="sr-only" for="password">Passwort</label>
+                                                <input type="password" class="form-control" name="password"
+                                                       placeholder="Passwort" required>
+                                            </div>
+                                            <input type="hidden" name="next" value="/"/>
+
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-success btn-block">Anmelden
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                            <a href="{% url 'auth_password_reset' %}">Passwort vergessen?</a></p>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>

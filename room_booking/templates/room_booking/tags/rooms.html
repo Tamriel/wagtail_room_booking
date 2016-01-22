@@ -1,0 +1,9 @@
+{% load wagtailcore_tags room_booking_tags %}
+
+{% for room in rooms %}
+    <p>
+        Name: {{ room.name }}
+        Kapazität: {{ room.capacity }}
+        <a class="btn btn-default" href="{% url 'booking_page' room.pk %}">Buchen</a>
+    </p>
+{% endfor %}
