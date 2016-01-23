@@ -125,9 +125,9 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -154,10 +154,11 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
 SITE_ID = int(os.environ.get("SITE_ID", 1))
-
 
 # Wagtail settings
 
 WAGTAIL_SITE_NAME = "wagtail_room_booking"
+
+# room booking settings
+WEEKLY_VIEW_URL = '/wochensicht/'

@@ -1,0 +1,16 @@
+{% extends "cms/wagtail_base.html" %}
+
+{% load wagtailcore_tags i18n room_booking_tags %}
+
+{% block content %}
+    <p class="meta">{{ page.date }}</p>
+
+    {{ page.body|richtext }}
+
+
+
+
+    {% rooms %}
+
+
+{% endblock %}

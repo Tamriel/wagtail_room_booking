@@ -8,8 +8,11 @@ from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 
 from search import views as search_views
+from room_booking import views
 
 urlpatterns = [
+    url(r'^booking_page/(?P<room_id>.*)/$', views.booking_page, name='booking_page'),
+    url(r'^book/(?P<room_id>.*)/$', views.book, name='book'),
     url(r'^django-admin/', include(admin.site.urls)),
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),

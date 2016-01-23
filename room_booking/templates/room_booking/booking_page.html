@@ -1,0 +1,24 @@
+{% extends "cms/wagtail_base.html" %}
+
+{% load wagtailcore_tags i18n %}
+
+{% block content %}
+
+    <form method='POST' action='{% url 'book' room.id %}'>
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="title" class="form-control" placeholder="Titel der Buchung">
+        </div>
+        {% if user.is_authenticated %}
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Raum buchen">
+            </div>
+        {% else %}
+            <div class="form-group">
+                <input type="" class="btn btn-success disabled" value="Raum buchen">
+            </div>
+            Zum buchen eines Raums ist ein Benutzerkonto erforderlich:
+            <a href="/accounts/register">Registrieren</a> oder <a href="/accounts/login">Anmelden</a>
+        {% endif %}
+    </form>
+{% endblock %}
