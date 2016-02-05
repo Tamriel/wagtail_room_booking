@@ -37,12 +37,13 @@ class Account(models.Model):
             _("street"),
             max_length=100,
     )
-    timezone = TimeZoneField(_("timezone"))
-    language = models.CharField(
-            _("language"),
-            max_length=10,
-            choices=settings.ACCOUNT_LANGUAGES,
-            default=settings.LANGUAGE_CODE
+    phone = models.CharField(
+            _("phone"),
+            max_length=100,
+    )
+    plz_city = models.CharField(
+            _("plz_city"),
+            max_length=100,
     )
 
     @classmethod

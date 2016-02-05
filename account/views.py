@@ -25,7 +25,6 @@ from account.utils import default_redirect, get_form_data
 
 
 class SignupView(FormView):
-
     template_name = "account/signup.html"
     template_name_ajax = "account/ajax/signup.html"
     template_name_email_confirmation_sent = "account/email_confirmation_sent.html"
@@ -104,7 +103,8 @@ class SignupView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
@@ -115,10 +115,10 @@ class SignupView(FormView):
 
     def form_invalid(self, form):
         signals.user_sign_up_attempt.send(
-            sender=SignupForm,
-            username=get_form_data(form, self.identifier_field),
-            email=get_form_data(form, "email"),
-            result=form.is_valid()
+                sender=SignupForm,
+                username=get_form_data(form, self.identifier_field),
+                email=get_form_data(form, "email"),
+                result=form.is_valid()
         )
         return super(SignupView, self).form_invalid(form)
 
@@ -147,11 +147,11 @@ class SignupView(FormView):
             ]
             if all(show_message):
                 messages.add_message(
-                    self.request,
-                    self.messages["email_confirmation_sent"]["level"],
-                    self.messages["email_confirmation_sent"]["text"].format(**{
-                        "email": form.cleaned_data["email"]
-                    })
+                        self.request,
+                        self.messages["email_confirmation_sent"]["level"],
+                        self.messages["email_confirmation_sent"]["text"].format(**{
+                            "email": form.cleaned_data["email"]
+                        })
                 )
             # attach form to self to maintain compatibility with login_user
             # API. this should only be relied on by d-u-a and it is not a stable
@@ -189,12 +189,23 @@ class SignupView(FormView):
         return user
 
     def create_account(self, form):
-        return Account.create(request=self.request, user=self.created_user, create_email=False)
+        account = Account.create(request=self.request, user=self.created_user, create_email=False)
+        fields = {}
+        if "street" in form.cleaned_data:
+            fields["street"] = form.cleaned_data["street"]
+        if "plz_city" in form.cleaned_data:
+            fields["plz_city"] = form.cleaned_data["plz_city"]
+        if "phone" in form.cleaned_data:
+            fields["phone"] = form.cleaned_data["phone"]
+        for k, v in fields.items():
+            setattr(account, k, v)
+        account.save()
+        return account
 
     def generate_username(self, form):
         raise NotImplementedError(
-            "Unable to generate username by default. "
-            "Override SignupView.generate_username in a subclass."
+                "Unable to generate username by default. "
+                "Override SignupView.generate_username in a subclass."
         )
 
     def create_email_address(self, form, **kwargs):
@@ -241,11 +252,11 @@ class SignupView(FormView):
             if self.signup_code_present:
                 if self.messages.get("invalid_signup_code"):
                     messages.add_message(
-                        self.request,
-                        self.messages["invalid_signup_code"]["level"],
-                        self.messages["invalid_signup_code"]["text"].format(**{
-                            "code": self.get_code(),
-                        })
+                            self.request,
+                            self.messages["invalid_signup_code"]["level"],
+                            self.messages["invalid_signup_code"]["text"].format(**{
+                                "code": self.get_code(),
+                            })
                     )
         return settings.ACCOUNT_OPEN_SIGNUP
 
@@ -277,7 +288,6 @@ class SignupView(FormView):
 
 
 class LoginView(FormView):
-
     template_name = "account/login.html"
     template_name_ajax = "account/ajax/login.html"
     form_class = LoginUsernameForm
@@ -300,7 +310,8 @@ class LoginView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
@@ -311,9 +322,9 @@ class LoginView(FormView):
 
     def form_invalid(self, form):
         signals.user_login_attempt.send(
-            sender=LoginView,
-            username=get_form_data(form, form.identifier_field),
-            result=form.is_valid()
+                sender=LoginView,
+                username=get_form_data(form, form.identifier_field),
+                result=form.is_valid()
         )
         return super(LoginView, self).form_invalid(form)
 
@@ -341,7 +352,6 @@ class LoginView(FormView):
 
 
 class LogoutView(TemplateResponseMixin, View):
-
     template_name = "account/logout.html"
     redirect_field_name = "next"
 
@@ -361,7 +371,8 @@ class LogoutView(TemplateResponseMixin, View):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
@@ -376,7 +387,6 @@ class LogoutView(TemplateResponseMixin, View):
 
 
 class ConfirmEmailView(TemplateResponseMixin, View):
-
     http_method_names = ["get", "post"]
     messages = {
         "email_confirmed": {
@@ -406,11 +416,11 @@ class ConfirmEmailView(TemplateResponseMixin, View):
             return self.render_to_response(ctx)
         if self.messages.get("email_confirmed"):
             messages.add_message(
-                self.request,
-                self.messages["email_confirmed"]["level"],
-                self.messages["email_confirmed"]["text"].format(**{
-                    "email": confirmation.email_address.email
-                })
+                    self.request,
+                    self.messages["email_confirmed"]["level"],
+                    self.messages["email_confirmed"]["text"].format(**{
+                        "email": confirmation.email_address.email
+                    })
             )
         return redirect(redirect_url)
 
@@ -447,7 +457,6 @@ class ConfirmEmailView(TemplateResponseMixin, View):
 
 
 class ChangePasswordView(FormView):
-
     template_name = "account/password_change.html"
     form_class = ChangePasswordForm
     redirect_field_name = "next"
@@ -483,9 +492,9 @@ class ChangePasswordView(FormView):
             self.send_email(user)
         if self.messages.get("password_changed"):
             messages.add_message(
-                self.request,
-                self.messages["password_changed"]["level"],
-                self.messages["password_changed"]["text"]
+                    self.request,
+                    self.messages["password_changed"]["level"],
+                    self.messages["password_changed"]["text"]
             )
 
     def get_form_kwargs(self):
@@ -510,7 +519,8 @@ class ChangePasswordView(FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
@@ -535,7 +545,6 @@ class ChangePasswordView(FormView):
 
 
 class PasswordResetView(FormView):
-
     template_name = "account/password_reset.html"
     template_name_sent = "account/password_reset_sent.html"
     form_class = PasswordResetForm
@@ -565,9 +574,9 @@ class PasswordResetView(FormView):
             uid = int_to_base36(user.id)
             token = self.make_token(user)
             password_reset_url = "{0}://{1}{2}".format(
-                protocol,
-                current_site.domain,
-                reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
+                    protocol,
+                    current_site.domain,
+                    reverse("account_password_reset_token", kwargs=dict(uidb36=uid, token=token))
             )
             ctx = {
                 "user": user,
@@ -581,7 +590,6 @@ class PasswordResetView(FormView):
 
 
 class PasswordResetTokenView(FormView):
-
     template_name = "account/password_reset_token.html"
     template_name_fail = "account/password_reset_token_fail.html"
     form_class = PasswordResetTokenForm
@@ -609,7 +617,8 @@ class PasswordResetTokenView(FormView):
             "uidb36": self.kwargs["uidb36"],
             "token": self.kwargs["token"],
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
@@ -625,9 +634,9 @@ class PasswordResetTokenView(FormView):
             self.send_email(user)
         if self.messages.get("password_changed"):
             messages.add_message(
-                self.request,
-                self.messages["password_changed"]["level"],
-                self.messages["password_changed"]["text"]
+                    self.request,
+                    self.messages["password_changed"]["level"],
+                    self.messages["password_changed"]["text"]
             )
 
     def form_valid(self, form):
@@ -674,7 +683,6 @@ class PasswordResetTokenView(FormView):
 
 
 class SettingsView(LoginRequiredMixin, FormView):
-
     template_name = "account/settings.html"
     form_class = SettingsForm
     redirect_field_name = "next"
@@ -696,18 +704,18 @@ class SettingsView(LoginRequiredMixin, FormView):
         initial = super(SettingsView, self).get_initial()
         if self.primary_email_address:
             initial["email"] = self.primary_email_address.email
-        initial["timezone"] = self.request.user.account.timezone
-        initial["language"] = self.request.user.account.language
         initial["street"] = self.request.user.account.street
+        initial["plz_city"] = self.request.user.account.plz_city
+        initial["phone"] = self.request.user.account.phone
         return initial
 
     def form_valid(self, form):
         self.update_settings(form)
         if self.messages.get("settings_updated"):
             messages.add_message(
-                self.request,
-                self.messages["settings_updated"]["level"],
-                self.messages["settings_updated"]["text"]
+                    self.request,
+                    self.messages["settings_updated"]["level"],
+                    self.messages["settings_updated"]["text"]
             )
         return redirect(self.get_success_url())
 
@@ -734,18 +742,19 @@ class SettingsView(LoginRequiredMixin, FormView):
         redirect_field_name = self.get_redirect_field_name()
         ctx.update({
             "redirect_field_name": redirect_field_name,
-            "redirect_field_value": self.request.POST.get(redirect_field_name, self.request.GET.get(redirect_field_name, "")),
+            "redirect_field_value": self.request.POST.get(redirect_field_name,
+                                                          self.request.GET.get(redirect_field_name, "")),
         })
         return ctx
 
     def update_account(self, form):
         fields = {}
-        if "timezone" in form.cleaned_data:
-            fields["timezone"] = form.cleaned_data["timezone"]
-        if "language" in form.cleaned_data:
-            fields["language"] = form.cleaned_data["language"]
         if "street" in form.cleaned_data:
             fields["street"] = form.cleaned_data["street"]
+        if "plz_city" in form.cleaned_data:
+            fields["plz_city"] = form.cleaned_data["plz_city"]
+        if "phone" in form.cleaned_data:
+            fields["phone"] = form.cleaned_data["phone"]
         if fields:
             account = self.request.user.account
             for k, v in fields.items():
@@ -763,7 +772,6 @@ class SettingsView(LoginRequiredMixin, FormView):
 
 
 class DeleteView(LogoutView):
-
     template_name = "account/delete.html"
     messages = {
         "account_deleted": {
@@ -776,11 +784,11 @@ class DeleteView(LogoutView):
         AccountDeletion.mark(self.request.user)
         auth.logout(self.request)
         messages.add_message(
-            self.request,
-            self.messages["account_deleted"]["level"],
-            self.messages["account_deleted"]["text"].format(**{
-                "expunge_hours": settings.ACCOUNT_DELETION_EXPUNGE_HOURS,
-            })
+                self.request,
+                self.messages["account_deleted"]["level"],
+                self.messages["account_deleted"]["text"].format(**{
+                    "expunge_hours": settings.ACCOUNT_DELETION_EXPUNGE_HOURS,
+                })
         )
         return redirect(self.get_redirect_url())
 

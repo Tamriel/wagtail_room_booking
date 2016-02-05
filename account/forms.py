@@ -18,34 +18,41 @@ from account.hooks import hookset
 from account.models import EmailAddress
 from account.utils import get_user_lookup_kwargs
 
-
 alnum_re = re.compile(r"^\w+$")
 
 
 class SignupForm(forms.Form):
-
     username = forms.CharField(
-        label=_("Username"),
-        max_length=30,
-        widget=forms.TextInput(),
-        required=True
+            label=_("Username"),
+            max_length=30,
+            widget=forms.TextInput(),
+            required=True
     )
     password = forms.CharField(
-        label=_("Password"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("Password"),
+            widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
-        label=_("Password (again)"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("Password (again)"),
+            widget=forms.PasswordInput(render_value=False)
     )
     email = forms.EmailField(
-        label=_("Email"),
-        widget=forms.TextInput(), required=True)
-
+            label=_("Email"),
+            widget=forms.TextInput(), required=True)
+    phone = forms.CharField(
+            label=_("Telefon"),
+            widget=forms.TextInput(), required=True)
+    street = forms.CharField(
+            label=_("Straße"),
+            max_length=100,
+    )
+    plz_city = forms.CharField(
+            label=_("PLZ / Stadt"),
+            widget=forms.TextInput(), required=True)
     code = forms.CharField(
-        max_length=64,
-        required=False,
-        widget=forms.HiddenInput()
+            max_length=64,
+            required=False,
+            widget=forms.HiddenInput()
     )
 
     def clean_username(self):
@@ -75,14 +82,13 @@ class SignupForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-
     password = forms.CharField(
-        label=_("Password"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("Password"),
+            widget=forms.PasswordInput(render_value=False)
     )
     remember = forms.BooleanField(
-        label=_("Remember Me"),
-        required=False
+            label=_("Remember Me"),
+            required=False
     )
     user = None
 
@@ -104,7 +110,6 @@ class LoginForm(forms.Form):
 
 
 class LoginUsernameForm(LoginForm):
-
     username = forms.CharField(label=_("Username"), max_length=30)
     authentication_fail_message = _("The username and/or password you specified are not correct.")
     identifier_field = "username"
@@ -119,7 +124,6 @@ class LoginUsernameForm(LoginForm):
 
 
 class LoginEmailForm(LoginForm):
-
     email = forms.EmailField(label=_("Email"))
     authentication_fail_message = _("The email address and/or password you specified are not correct.")
     identifier_field = "email"
@@ -134,18 +138,17 @@ class LoginEmailForm(LoginForm):
 
 
 class ChangePasswordForm(forms.Form):
-
     password_current = forms.CharField(
-        label=_("Current Password"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("Current Password"),
+            widget=forms.PasswordInput(render_value=False)
     )
     password_new = forms.CharField(
-        label=_("New Password"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("New Password"),
+            widget=forms.PasswordInput(render_value=False)
     )
     password_new_confirm = forms.CharField(
-        label=_("New Password (again)"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("New Password (again)"),
+            widget=forms.PasswordInput(render_value=False)
     )
 
     def __init__(self, *args, **kwargs):
@@ -165,7 +168,6 @@ class ChangePasswordForm(forms.Form):
 
 
 class PasswordResetForm(forms.Form):
-
     email = forms.EmailField(label=_("Email"), required=True)
 
     def clean_email(self):
@@ -176,14 +178,13 @@ class PasswordResetForm(forms.Form):
 
 
 class PasswordResetTokenForm(forms.Form):
-
     password = forms.CharField(
-        label=_("New Password"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("New Password"),
+            widget=forms.PasswordInput(render_value=False)
     )
     password_confirm = forms.CharField(
-        label=_("New Password (again)"),
-        widget=forms.PasswordInput(render_value=False)
+            label=_("New Password (again)"),
+            widget=forms.PasswordInput(render_value=False)
     )
 
     def clean_password_confirm(self):
@@ -194,23 +195,19 @@ class PasswordResetTokenForm(forms.Form):
 
 
 class SettingsForm(forms.Form):
-
     email = forms.EmailField(label=_("Email"), required=True)
     street = forms.CharField(
             label=_("Straße"),
             max_length=100,
     )
-    timezone = forms.ChoiceField(
-        label=_("Timezone"),
-        choices=[("", "---------")] + settings.ACCOUNT_TIMEZONES,
-        required=False
+    phone = forms.CharField(
+            label=_("Telefon"),
+            max_length=100,
     )
-    if settings.USE_I18N:
-        language = forms.ChoiceField(
-            label=_("Language"),
-            choices=settings.ACCOUNT_LANGUAGES,
-            required=False
-        )
+    plz_city = forms.CharField(
+            label=_("PLZ / Stadt"),
+            max_length=100,
+    )
 
     def clean_email(self):
         value = self.cleaned_data["email"]
