@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^search/$', search_views.search, name='search'),
     url(r"^account/", include("account.urls")),
+    url(r'^schedule/', include('schedule.urls')),
     url(r'', include(wagtail_urls)),
 ]
 

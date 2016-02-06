@@ -23,10 +23,6 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
-    'search',
-    'room_booking',
-    'cms',
-
     'wagtail.wagtailforms',
     'wagtail.wagtailredirects',
     'wagtail.wagtailembeds',
@@ -51,10 +47,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # theme
-    'account',
     "bootstrapform",
     "pinax_theme_bootstrap",
+
+    'search',
+    'room_booking',
+    'cms',
+    'account',
+    'schedule',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -92,6 +92,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                "django.core.context_processors.request",
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
